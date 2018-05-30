@@ -20,18 +20,18 @@ episode = 0
 EPISODES = 100000000
 # In case of BreakoutDeterministic-v3, always skip 4 frames
 # Deterministic-v4 version use 4 actions
-env_name = "Labyrinth4Rooms-v0"
+env_name = "LabyrinthRandomDoors-v0"
 
 # This is A3C(Asynchronous Advantage Actor Critic) agent(global) for the Cartpole
 # In this example, we use A3C algorithm
 class A3CAgent:
     def __init__(self, action_size=None):
-        env = gym.make(env_name)
+        #env = gym.make(env_name)
 
         # environment settings
         self.state_size = (120, 160, 1)
         self.action_size = 3
-        env = None
+        #env = None
 
         self.discount_factor = 0.99
         self.no_op_steps = 30
@@ -39,7 +39,7 @@ class A3CAgent:
         # optimizer parameters
         self.actor_lr = 2.5e-4
         self.critic_lr = 2.5e-4
-        self.threads = 16
+        self.threads = 8
 
         # create model for actor and critic network
         self.actor, self.critic = self.build_model()
@@ -52,7 +52,7 @@ class A3CAgent:
         self.sess.run(tf.global_variables_initializer())
 
         self.summary_placeholders, self.update_ops, self.summary_op = self.setup_summary()
-        self.summary_writer = tf.summary.FileWriter('summary/a3c', self.sess.graph)
+        self.summary_writer = tf.summary.FileWriter('summary/Random', self.sess.graph)
 
     def train(self):
         # self.load_model("./save_model/breakout_a3c")
@@ -336,7 +336,7 @@ class Agent(threading.Thread):
 # float --> integer (to reduce the size of replay memory)
 def pre_processing(next_observe, observe):
     processed_observe = np.maximum(next_observe, observe)
-    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (120, 160), mode='constant') * 255)
+    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (120, 120), mode='constant') * 255)
     return processed_observe
 
 
