@@ -68,7 +68,7 @@ class A3CAgent:
                         self.update_ops, self.summary_writer]) for _ in range(self.threads)]
 
         for agent in agents:
-            time.sleep(1)
+            time.sleep(2)
             agent.start()
 
         while True:
