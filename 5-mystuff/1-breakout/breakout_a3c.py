@@ -29,7 +29,7 @@ class A3CAgent:
         env = gym.make(env_name)
 
         # environment settings
-        self.state_size = (120, 160, 1)
+        self.state_size = (120, 120, 1)
         self.action_size = 3
         env = None
 
@@ -39,7 +39,7 @@ class A3CAgent:
         # optimizer parameters
         self.actor_lr = 2.5e-4
         self.critic_lr = 2.5e-4
-        self.threads = 16
+        self.threads = 4
 
         # create model for actor and critic network
         self.actor, self.critic = self.build_model()
@@ -336,7 +336,7 @@ class Agent(threading.Thread):
 # float --> integer (to reduce the size of replay memory)
 def pre_processing(next_observe, observe):
     processed_observe = np.maximum(next_observe, observe)
-    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (120, 160), mode='constant') * 255)
+    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (120, 120), mode='constant') * 255)
     return processed_observe
 
 
