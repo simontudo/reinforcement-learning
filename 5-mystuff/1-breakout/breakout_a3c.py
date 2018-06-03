@@ -12,6 +12,7 @@ from keras.layers import Dense, Flatten, Input
 from keras.layers.convolutional import Conv2D
 from keras import backend as K
 import argparse
+from datetime import datetime
 import gymlabyrinth
 import vizdoomgym
 
@@ -58,7 +59,7 @@ class A3CAgent:
         self.sess.run(tf.global_variables_initializer())
 
         self.summary_placeholders, self.update_ops, self.summary_op = self.setup_summary()
-        self.summary_writer = tf.summary.FileWriter('summary/Random', self.sess.graph)
+        self.summary_writer = tf.summary.FileWriter('summary/' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f"), self.sess.graph)
 
     def train(self):
         # self.load_model("./save_model/breakout_a3c")
