@@ -29,16 +29,17 @@ EPISODES = args.episodes
 # Deterministic-v4 version use 4 actions
 env_name = args.env_name
 
+
 # This is A3C(Asynchronous Advantage Actor Critic) agent(global) for the Cartpole
 # In this example, we use A3C algorithm
 class A3CAgent:
     def __init__(self, action_size=None):
-        #env = gym.make(env_name)
+        # env = gym.make(env_name)
 
         # environment settings
         self.state_size = (120, 120, 1)
         self.action_size = 3
-        #env = None
+        # env = None
 
         self.discount_factor = 0.99
         self.no_op_steps = 30
@@ -65,14 +66,14 @@ class A3CAgent:
         # self.load_model("./save_model/breakout_a3c")
         agents = [Agent(self.action_size, self.state_size, [self.actor, self.critic], self.sess, self.optimizer,
                         self.discount_factor, [self.summary_op, self.summary_placeholders,
-                        self.update_ops, self.summary_writer]) for _ in range(self.threads)]
+                                               self.update_ops, self.summary_writer]) for _ in range(self.threads)]
 
         for agent in agents:
             time.sleep(2)
             agent.start()
 
         while True:
-            time.sleep(60*10)
+            time.sleep(60 * 10)
             self.save_model("./save_model/breakout_a3c")
 
     # approximate policy and value using Neural Network
@@ -115,7 +116,7 @@ class A3CAgent:
         entropy = K.sum(policy * K.log(policy + 1e-10), axis=1)
         entropy = K.sum(entropy)
 
-        loss = actor_loss + 0.01*entropy
+        loss = actor_loss + 0.01 * entropy
         optimizer = RMSprop(lr=self.actor_lr, rho=0.99, epsilon=0.01)
         updates = optimizer.get_updates(self.actor.trainable_weights, [], loss)
         train = K.function([self.actor.input, action, advantages], [loss], updates=updates)
@@ -124,7 +125,7 @@ class A3CAgent:
 
     # make loss function for Value approximation
     def critic_optimizer(self):
-        discounted_reward = K.placeholder(shape=(None, ))
+        discounted_reward = K.placeholder(shape=(None,))
 
         value = self.critic.output
 
@@ -159,6 +160,7 @@ class A3CAgent:
         summary_op = tf.summary.merge_all()
         return summary_placeholders, update_ops, summary_op
 
+
 # make agents(local) and start training
 class Agent(threading.Thread):
     def __init__(self, action_size, state_size, model, sess, optimizer, discount_factor, summary_ops):
@@ -172,7 +174,7 @@ class Agent(threading.Thread):
         self.discount_factor = discount_factor
         self.summary_op, self.summary_placeholders, self.update_ops, self.summary_writer = summary_ops
 
-        self.states, self.actions, self.rewards = [],[],[]
+        self.states, self.actions, self.rewards = [], [], []
 
         self.local_actor, self.local_critic = self.build_localmodel()
 
@@ -222,7 +224,7 @@ class Agent(threading.Thread):
                 # pre-process the observation --> history
                 next_state = pre_processing(next_observe, observe)
                 next_state = np.reshape([next_state], (1, self.state_size[0], self.state_size[1], 1))
-                #next_history = np.append(next_state, history[:, :, :, :], axis=3)
+                # next_history = np.append(next_state, history[:, :, :, :], axis=3)
                 next_history = next_state
 
                 self.avg_p_max += np.amax(self.actor.predict(np.float32(history / 255.)))
