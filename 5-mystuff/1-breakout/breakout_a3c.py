@@ -11,16 +11,23 @@ from keras.optimizers import RMSprop
 from keras.layers import Dense, Flatten, Input
 from keras.layers.convolutional import Conv2D
 from keras import backend as K
+import argparse
 import gymlabyrinth
 import vizdoomgym
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--episodes', type=int, help='Number of episodes to run', default=100000000)
+parser.add_argument('--threads', type=int, help='Number of threads', default=8)
+parser.add_argument('--env-name', type=str, help='Name of gym environment', default="LabyrinthRandomDoors-v0")
+args = parser.parse_args()
 
 # global variables for A3C
 global episode
 episode = 0
-EPISODES = 100000000
+EPISODES = args.episodes
 # In case of BreakoutDeterministic-v3, always skip 4 frames
 # Deterministic-v4 version use 4 actions
-env_name = "LabyrinthRandomDoors-v0"
+env_name = args.env_name
 
 # This is A3C(Asynchronous Advantage Actor Critic) agent(global) for the Cartpole
 # In this example, we use A3C algorithm
@@ -39,7 +46,7 @@ class A3CAgent:
         # optimizer parameters
         self.actor_lr = 2.5e-4
         self.critic_lr = 2.5e-4
-        self.threads = 16
+        self.threads = args.threads
 
         # create model for actor and critic network
         self.actor, self.critic = self.build_model()
