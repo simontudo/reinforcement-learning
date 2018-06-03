@@ -6,15 +6,18 @@ from skimage.transform import resize
 from keras.models import Model
 from keras.layers import Dense, Flatten, Input
 from keras.layers.convolutional import Conv2D
+import gymlabyrinth
+import vizdoomgym
 
 global episode
 episode = 0
 EPISODES = 8000000
-env_name = "BreakoutDeterministic-v4"
+env_name = "LabyrinthRandomDoors-v0"
+
 
 class TestAgent:
     def __init__(self, action_size):
-        self.state_size = (84, 84, 4)
+        self.state_size = (120, 120, 1)
         self.action_size = action_size
 
         self.discount_factor = 0.99
@@ -24,10 +27,10 @@ class TestAgent:
 
     def build_model(self):
         input = Input(shape=self.state_size)
-        conv = Conv2D(16, (8, 8), strides=(4, 4), activation='relu')(input)
+        conv = Conv2D(32, (8, 8), strides=(4, 4), activation='relu')(input)
         conv = Conv2D(32, (4, 4), strides=(2, 2), activation='relu')(conv)
         conv = Flatten()(conv)
-        fc = Dense(256, activation='relu')(conv)
+        fc = Dense(1024, activation='relu')(conv)
         policy = Dense(self.action_size, activation='softmax')(fc)
         value = Dense(1, activation='linear')(fc)
 
@@ -52,7 +55,7 @@ class TestAgent:
 def pre_processing(next_observe, observe):
     processed_observe = np.maximum(next_observe, observe)
     processed_observe = np.uint8(
-        resize(rgb2gray(processed_observe), (84, 84), mode='constant') * 255)
+        resize(rgb2gray(processed_observe), (120, 120), mode='constant') * 255)
     return processed_observe
 
 
@@ -76,8 +79,8 @@ if __name__ == "__main__":
             next_observe, _, _, _ = env.step(1)
 
         state = pre_processing(next_observe, observe)
-        history = np.stack((state, state, state, state), axis=2)
-        history = np.reshape([history], (1, 84, 84, 4))
+        history = state
+        history = np.reshape([history], (1, 120, 120, 1))
 
         while not done:
             env.render()
@@ -100,8 +103,9 @@ if __name__ == "__main__":
             next_observe, reward, done, info = env.step(fake_action)
 
             next_state = pre_processing(next_observe, observe)
-            next_state = np.reshape([next_state], (1, 84, 84, 1))
-            next_history = np.append(next_state, history[:, :, :, :3], axis=3)
+            next_state = np.reshape([next_state], (1, 120, 120, 1))
+            #next_history = np.append(next_state, history[:, :, :, :3], axis=3)
+            next_history = next_state
 
             if start_life > info['ale.lives']:
                 dead = True
@@ -112,9 +116,8 @@ if __name__ == "__main__":
 
             # if agent is dead, then reset the history
             if dead:
-                history = np.stack(
-                    (next_state, next_state, next_state, next_state), axis=2)
-                history = np.reshape([history], (1, 84, 84, 4))
+                history = next_state
+                #history = np.reshape([history], (1, 120, 120, 1))
             else:
                 history = next_history
 
