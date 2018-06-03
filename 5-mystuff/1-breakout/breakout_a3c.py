@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--episodes', type=int, help='Number of episodes to run', default=100000000)
 parser.add_argument('--threads', type=int, help='Number of threads', default=8)
 parser.add_argument('--env-name', type=str, help='Name of gym environment', default="LabyrinthRandomDoors-v0")
+parser.add_argument('--obs-size', type=int, help='Size of observation', default="120")
 args = parser.parse_args()
 
 # global variables for A3C
@@ -36,7 +37,7 @@ class A3CAgent:
         # env = gym.make(env_name)
 
         # environment settings
-        self.state_size = (120, 120, 1)
+        self.state_size = (args.obs_size, args.obs_size, 1)
         self.action_size = 3
         # env = None
 
@@ -344,7 +345,7 @@ class Agent(threading.Thread):
 # float --> integer (to reduce the size of replay memory)
 def pre_processing(next_observe, observe):
     processed_observe = np.maximum(next_observe, observe)
-    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (120, 120), mode='constant') * 255)
+    processed_observe = np.uint8(resize(rgb2gray(processed_observe), (args.obs_size, args.obs_size), mode='constant') * 255)
     return processed_observe
 
 
