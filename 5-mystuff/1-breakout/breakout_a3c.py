@@ -25,15 +25,13 @@ args = parser.parse_args()
 global episode
 episode = 0
 EPISODES = args.episodes
-# In case of BreakoutDeterministic-v3, always skip 4 frames
-# Deterministic-v4 version use 4 actions
 env_name = args.env_name
 
 
 # This is A3C(Asynchronous Advantage Actor Critic) agent(global) for the Cartpole
 # In this example, we use A3C algorithm
 class A3CAgent:
-    def __init__(self, action_size=None):
+    def __init__(self):
         # env = gym.make(env_name)
 
         # environment settings
